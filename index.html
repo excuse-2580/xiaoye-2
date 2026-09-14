@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
+<title>炭宝的小窝 · 扩列条</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --surface: #1c2230;
+  --border: #2d3444;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --yellow: #d29922;
+  --red: #f85149;
+  --purple: #a371f7;
+  --pink: #ff9ecd;
+  --mono: "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.6;
+  -webkit-font-smoothing: antialiased; padding-bottom: 80px;
+}
+a { color: var(--accent); text-decoration: none; }
+
+/* 顶部终端栏 */
+.terminal-bar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(13,17,23,.85); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.terminal-bar__inner {
+  max-width: 860px; margin: 0 auto; padding: 12px 20px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.terminal-bar .prompt { color: var(--green); font-family: var(--mono); font-size: 13px; }
+.terminal-bar .cmd { color: var(--accent); font-family: var(--mono); font-size: 13px; }
+.nav { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+.nav a {
+  color: var(--muted); font-size: 13px; padding: 6px 10px; border-radius: 6px;
+  transition: color .15s, background .15s; white-space: nowrap;
+}
+.nav a:hover { color: var(--text); background: var(--surface); }
+.nav a.active { color: var(--accent); background: rgba(88,166,255,.1); }
+
+.container { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+
+/* Hero */
+.hero { padding: 56px 0 28px; }
+.hero .whoami { color: var(--green); font-family: var(--mono); font-size: 14px; margin-bottom: 14px; }
+.hero h1 { font-size: 38px; font-weight: 700; line-height: 1.25; margin-bottom: 12px; }
+.hero h1 .accent { color: var(--accent); }
+.hero .subtitle { color: var(--muted); font-size: 15px; max-width: 620px; }
+.hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.hero-tag {
+  padding: 4px 12px; border-radius: 999px; font-size: 12px;
+  background: rgba(88,166,255,.1); color: var(--accent); border: 1px solid rgba(88,166,255,.25);
+}
+
+/* 章节 */
+section { padding: 32px 0; scroll-margin-top: 70px; }
+.sec-head { margin-bottom: 20px; }
+.sec-head .en {
+  font-family: var(--mono); font-size: 12px; color: var(--accent); letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.sec-head h2 { font-size: 24px; font-weight: 700; margin-top: 4px; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px; margin-bottom: 14px;
+}
+.card h3 { font-size: 15px; margin-bottom: 14px; }
+
+/* 基本信息 */
+.meta-row {
+  display: flex; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--border);
+}
+.meta-row:last-child { border-bottom: none; }
+.meta-key { width: 96px; color: var(--muted); font-size: 14px; flex-shrink: 0; }
+.meta-val { flex: 1; font-size: 14px; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px;
+  background: rgba(163,113,247,.12); color: var(--purple); font-size: 12px;
+  border: 1px solid rgba(163,113,247,.25);
+}
+.note-box {
+  background: rgba(210,153,34,.08); border: 1px solid rgba(210,153,34,.25);
+  border-radius: 10px; padding: 14px 16px; margin-top: 14px;
+}
+.note-box .t { color: var(--yellow); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.note-box ul { margin-left: 18px; }
+.note-box li { font-size: 13px; color: var(--muted); margin: 3px 0; }
+
+/* 兽设卡片 */
+.fursona-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.fursona {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 22px; display: flex; flex-direction: column; gap: 10px;
+  transition: border-color .15s, transform .15s;
+}
+.fursona:hover { border-color: var(--purple); transform: translateY(-3px); }
+.fursona--coal { border-top: 3px solid #6b7280; }
+.fursona--choco { border-top: 3px solid #b9855c; }
+.fursona .avatar {
+  width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 30px;
+}
+.fursona--coal .avatar { background: rgba(107,114,128,.2); }
+.fursona--choco .avatar { background: rgba(185,133,92,.2); }
+.fursona .name { font-size: 19px; font-weight: 700; }
+.fursona .name .role {
+  font-size: 11px; padding: 2px 8px; border-radius: 6px; margin-left: 8px;
+  background: rgba(88,166,255,.15); color: var(--accent); vertical-align: middle;
+}
+.fursona .desc { font-size: 14px; color: var(--muted); }
+.fursona .meta-line { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.fursona .origin {
+  font-size: 12px; padding: 4px 10px; border-radius: 6px; align-self: flex-start;
+  background: rgba(163,113,247,.12); color: var(--purple);
+}
+
+/* 游戏 */
+.daily-games { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.daily-game {
+  display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px; font-size: 14px;
+}
+.daily-game .dot { width: 10px; height: 10px; border-radius: 50%; }
+.games { display: flex; flex-direction: column; gap: 8px; }
+.game {
+  display: flex; align-items: center; gap: 14px; padding: 12px 16px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  text-decoration: none; color: inherit; transition: border-color .15s, transform .15s;
+}
+.game:hover { border-color: var(--accent); transform: translateX(4px); }
+.game-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.game-name { flex: 1; font-size: 15px; }
+.game-note { font-size: 12px; color: var(--muted); }
+.game-arrow { color: var(--muted); }
+.dot--sr { background: #7b68ee; } .dot--roblox { background: #ff5e5b; } .dot--delta { background: #c9a227; }
+.dot--codm { background: #ff8c42; } .dot--mini { background: #5ac8fa; } .dot--bs { background: #ffcc4d; }
+.dot--cr { background: #a06bd6; } .dot--egg { background: #ffd93d; } .dot--steam { background: #c7d5e0; }
+.dot--roco { background: #4fc3f7; } .dot--naruto { background: #f5a623; } .dot--cfm { background: #e35d5d; }
+.dot--nfs { background: #4a90d9; } .dot--speed { background: #6ddf9c; } .dot--wotb { background: #8b9a5b; }
+.dot--sky { background: #ffb3c1; } .dot--poke { background: #ffcb05; } .dot--phira { background: #a66cff; }
+.dot--milthm { background: #ff9ecd; } .dot--yys { background: #b34b4b; } .dot--mc { background: #62b47a; }
+.game--lite { opacity: .8; } .game--dead { opacity: .5; }
+.games-hint { font-size: 12px; color: var(--muted); margin-top: 14px; line-height: 1.7; padding: 12px 16px; background: var(--bg2); border-radius: 10px; }
+.vpn-btn { display: inline-block; margin-left: 8px; padding: 2px 10px; font-size: 11px; background: var(--accent); color: #fff; border-radius: 6px; }
+.mc-download { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+.mc-download .btn { flex: 1; min-width: 140px; text-align: center; padding: 10px; border-radius: 8px; font-size: 13px; border: 1px solid var(--border); }
+.mc-download .btn--primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* 圈子 / 好感 */
+.circles { display: flex; flex-wrap: wrap; gap: 10px; }
+.circle-chip {
+  padding: 10px 18px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; font-size: 14px;
+}
+.favor {
+  display: flex; align-items: center; gap: 16px; padding: 18px 20px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-top: 14px;
+}
+.favor .lv {
+  font-family: var(--mono); font-size: 26px; font-weight: 700; color: var(--green);
+  background: rgba(63,185,80,.12); width: 62px; height: 62px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.favor .txt { flex: 1; }
+.favor .txt .t { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+.favor .txt .d { font-size: 13px; color: var(--muted); }
+
+/* 避雷 */
+.avoid-label { font-size: 13px; color: var(--muted); margin: 18px 0 8px; }
+.avoid { list-style: none; }
+.avoid li {
+  padding: 14px 16px; margin-bottom: 8px; background: var(--surface); border: 1px solid var(--border);
+  border-left: 4px solid var(--red); border-radius: 8px;
+}
+.avoid li.mild { border-left-color: var(--yellow); }
+.avoid .t { font-weight: 600; font-size: 14px; color: var(--text); }
+.avoid li.severe .t { color: var(--red); }
+.avoid .d { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+/* 联系 */
+.contact { display: flex; flex-direction: column; gap: 10px; }
+.contact-item {
+  display: flex; align-items: center; gap: 16px; padding: 14px 18px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  text-decoration: none; color: inherit; transition: border-color .15s;
+}
+.contact-item:hover { border-color: var(--accent); }
+.contact-icon {
+  width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #fff; flex-shrink: 0;
+}
+.contact-icon--douyin { background: linear-gradient(135deg, #25f4ee, #fe2c55); }
+.contact-icon--bili { background: linear-gradient(135deg, #fb7299, #e04e7f); }
+.contact-icon--fursuit { background: var(--purple); }
+.contact-icon--qq { background: linear-gradient(135deg, #12b7f5, #0d8fd6); }
+.contact-info { flex: 1; min-width: 0; }
+.contact-name { font-size: 15px; font-weight: 500; }
+.contact-desc { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.contact-go { color: var(--muted); }
+
+/* 页脚 */
+footer { border-top: 1px solid var(--border); margin-top: 36px; padding: 28px 20px; text-align: center; }
+footer .quote { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
+footer .binary { font-family: var(--mono); font-size: 11px; color: var(--border); word-break: break-all; margin-bottom: 12px; }
+footer .copy { font-size: 12px; color: var(--muted); }
+
+/* 留言板 */
+.fab {
+  position: fixed; right: 20px; bottom: 20px; z-index: 100;
+  display: flex; align-items: center; gap: 8px; padding: 14px 20px;
+  background: var(--accent); color: #fff; border: none; border-radius: 999px;
+  font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 24px rgba(88,166,255,.4);
+  transition: transform .15s;
+}
+.fab:active { transform: scale(.95); }
+.sheet-overlay {
+  position: fixed; inset: 0; z-index: 200; display: none; align-items: flex-end; justify-content: center;
+  background: rgba(0,0,0,.6);
+}
+.sheet-overlay.open { display: flex; }
+.sheet {
+  width: 100%; max-width: 480px; height: 75vh; max-height: 640px;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 20px 20px 0 0;
+  display: flex; flex-direction: column; animation: up .3s ease; position: relative;
+}
+@keyframes up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.sheet-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.sheet-header h2 { font-size: 17px; }
+.sheet-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
+.sheet-body { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.msg {
+  align-self: flex-end; max-width: 82%; padding: 10px 14px; font-size: 14px; word-break: break-word;
+  background: rgba(88,166,255,.15); border: 1px solid rgba(88,166,255,.3); border-radius: 14px 14px 4px 14px;
+}
+.msg--remote { align-self: flex-start; background: var(--surface); border-color: var(--border); border-radius: 14px 14px 14px 4px; }
+.msg .author { font-size: 11px; font-weight: 700; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+.msg .author--self { color: var(--accent); } .msg .author--other { color: var(--muted); }
+.msg .badge { background: var(--yellow); color: #4a3800; font-size: 9px; padding: 1px 5px; border-radius: 4px; }
+.msg .time { font-size: 10px; color: var(--muted); margin-top: 3px; text-align: right; }
+.btn-go-github {
+  display: flex; align-items: center; justify-content: center; gap: 6px; margin: 4px 20px 0;
+  padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); font-size: 13px; font-weight: 500;
+}
+.btn-go-github svg { width: 14px; height: 14px; fill: currentColor; }
+.btn-retry { align-self: center; margin-top: 8px; padding: 8px 16px; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 8px; cursor: pointer; font-size: 13px; }
+.sheet-input { display: flex; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--border); }
+.text-field { flex: 1; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; }
+.text-field input { border: none; background: transparent; outline: none; color: var(--text); font-size: 14px; padding: 6px 0; font-family: inherit; }
+.sheet-input .btn { padding: 10px 18px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+.snackbar {
+  position: absolute; left: 16px; right: 16px; bottom: 88px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  padding: 14px 16px; border-radius: 10px; font-size: 13px; display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+.snackbar__action { margin-left: auto; background: none; border: none; color: var(--accent); font-weight: 600; cursor: pointer; }
+#toast {
+  position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%);
+  background: var(--text); color: var(--bg); padding: 12px 20px; border-radius: 8px;
+  font-size: 13px; z-index: 999; display: none; white-space: nowrap;
+}
+@media (max-width: 520px) {
+  .hero h1 { font-size: 30px; }
+  .nav a { padding: 5px 8px; font-size: 12px; }
+  .meta-key { width: 80px; }
+}
+</style>
+</head>
+<body>
+
+<div class="terminal-bar">
+  <div class="terminal-bar__inner">
+    <span class="prompt">~/炭宝的小窝</span>
+    <span class="cmd">whoami</span>
+    <nav class="nav">
+      <a href="#home">主页</a>
+      <a href="#fursona">兽设</a>
+      <a href="#games">游戏</a>
+      <a href="#circles">圈子</a>
+      <a href="#avoid">避雷</a>
+      <a href="#contact">联系</a>
+    </nav>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero" id="home">
+    <div class="whoami">$ whoami</div>
+    <h1>你好，我是<span class="accent">炭宝</span> 🐾</h1>
+    <p class="subtitle">18岁 · 山东枣庄 · 目前休学居家，时间充裕好聊天～ 这里是我的扩列条，欢迎来了解我和我的两只兽设！</p>
+    <div class="hero-tags">
+      <span class="hero-tag">🐺 煤炭成精 · 炭宝</span>
+      <span class="hero-tag">🍫 巧克力奶油 · 黎宝</span>
+      <span class="hero-tag">🎮 我的世界 / Steam / 手游</span>
+      <span class="hero-tag">💜 福瑞圈</span>
+    </div>
+  </div>
+
+  <!-- 关于我 -->
+  <section id="home-info">
+    <div class="sec-head">
+      <div class="en">About Me</div>
+      <h2>关于我</h2>
+    </div>
+    <div class="card">
+      <div class="meta-row"><div class="meta-key">年龄</div><div class="meta-val">18岁</div></div>
+      <div class="meta-row"><div class="meta-key">身高 / 体重</div><div class="meta-val">178cm · 105斤</div></div>
+      <div class="meta-row"><div class="meta-key">坐标</div><div class="meta-val">山东省枣庄市峄城区（可能随家人在各省工地）· 蹲同城同好</div></div>
+      <div class="meta-row"><div class="meta-key">性取向</div><div class="meta-val">女生</div></div>
+      <div class="meta-row"><div class="meta-key">感情状态</div><div class="meta-val">目前无对象</div></div>
+      <div class="meta-row"><div class="meta-key">当前状态</div><div class="meta-val">居家待业 · 正在努力找工作（求职之路好艰难 qwq）</div></div>
+      <div class="meta-row"><div class="meta-key">近况</div><div class="meta-val">目前休学居家，时间充裕好聊天～</div></div>
+      <div class="chip-row">
+        <span class="chip">🎮 喜欢玩游戏</span>
+        <span class="chip">🐺 兽设 · 煤炭 / 巧克力奶油</span>
+        <span class="chip">📱 虚拟机 / 安卓折腾</span>
+        <span class="chip">💬 好聊天</span>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <div class="t">⚠️ 提前说明（介意慎加）</div>
+      <ul>
+        <li>本人性格有点急躁</li>
+        <li>空间偶尔会发轻度擦边内容（绝非低俗黄小鬼）、AI 生成文案</li>
+        <li>偶尔会已读不回</li>
+        <li>不喜欢躺列零交流</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 兽设档案 -->
+  <section id="fursona">
+    <div class="sec-head">
+      <div class="en">Fursona</div>
+      <h2>兽设档案</h2>
+    </div>
+    <div class="fursona-grid">
+      <div class="fursona fursona--coal">
+        <div class="avatar">🐺</div>
+        <div class="name">炭宝<span class="role">哥哥</span></div>
+        <div class="origin">🖤 煤炭成精后变成的小狼</div>
+        <div class="meta-line">2024 年诞生</div>
+        <div class="desc">软乎乎圆滚滚的小煤球一只～</div>
+      </div>
+      <div class="fursona fursona--choco">
+        <div class="avatar">🐶</div>
+        <div class="name">黎宝<span class="role">二号兽设 · 弟弟</span></div>
+        <div class="origin">🤎 巧克力奶油成精后变成的小狼</div>
+        <div class="meta-line">2026 年 5 月诞生</div>
+        <div class="desc">甜甜的巧克力奶油小狼，炭宝的弟弟～</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 游戏 -->
+  <section id="games">
+    <div class="sec-head">
+      <div class="en">Games</div>
+      <h2>日常游戏</h2>
+    </div>
+    <div class="daily-games">
+      <div class="daily-game"><span class="dot" style="background:#62b47a"></span>我的世界（只玩国际基岩 &amp; 网易）</div>
+      <div class="daily-game"><span class="dot" style="background:#c7d5e0"></span>Steam 各类冷门免费小游戏</div>
+      <div class="daily-game"><span class="dot" style="background:#c9a227"></span>巅峰、使命召唤等手游</div>
+    </div>
+
+    <div class="sec-head" style="margin-top:26px">
+      <div class="en">Game List</div>
+      <h2>游戏列表</h2>
+    </div>
+    <div class="games" id="gameList"></div>
+  </section>
+
+  <!-- 常驻圈子 / 好感机制 -->
+  <section id="circles">
+    <div class="sec-head">
+      <div class="en">Circles</div>
+      <h2>常驻圈子</h2>
+    </div>
+    <div class="circles">
+      <span class="circle-chip">🎮 我的世界</span>
+      <span class="circle-chip">🐾 福瑞圈</span>
+      <span class="circle-chip">📱 虚拟机 / 安卓折腾</span>
+    </div>
+
+    <div class="sec-head" style="margin-top:26px">
+      <div class="en">Favorability</div>
+      <h2>好感机制</h2>
+    </div>
+    <div class="favor">
+      <div class="lv">0</div>
+      <div class="txt">
+        <div class="t">刚加好友初始好感度为 0</div>
+        <div class="d">多多聊天、互动分享会慢慢提升好感！</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 避雷 -->
+  <section id="avoid">
+    <div class="sec-head">
+      <div class="en">Avoid</div>
+      <h2>雷点预警</h2>
+    </div>
+
+    <div class="avoid-label">微雷</div>
+    <ul class="avoid">
+      <li class="mild"><div class="t">频繁扯三次元琐事</div></li>
+      <li class="mild"><div class="t">承诺的事屡屡失信</div></li>
+      <li class="mild">
+        <div class="t">给我的两只兽设绘制涩图</div>
+        <div class="d">担心家长翻看相册 + QQ 相册审核不通过</div>
+      </li>
+    </ul>
+
+    <div class="avoid-label">重度雷区</div>
+    <ul class="avoid">
+      <li class="severe">
+        <div class="t">私自盗用、抄袭我的兽设全部设定</div>
+      </li>
+    </ul>
+
+    <div class="avoid-label">直接避雷</div>
+    <ul class="avoid">
+      <li class="severe"><div class="t">聊黄</div></li>
+      <li class="severe"><div class="t">阴阳人</div></li>
+    </ul>
+  </section>
+
+  <!-- 联系 -->
+  <section id="contact">
+    <div class="sec-head">
+      <div class="en">Contact</div>
+      <h2>联系方式</h2>
+    </div>
+    <div class="contact">
+      <a class="contact-item" href="https://www.iesdouyin.com/share/user/MS4wLjABAAAAk6FvSte4YQErTKFjDDpiseroaY5s8DvQ7o1i74LgioU" target="_blank" rel="noopener">
+        <div class="contact-icon contact-icon--douyin">🎵</div>
+        <div class="contact-info"><div class="contact-name">抖音 · LT_小夜</div><div class="contact-desc">抖音号 moyeawa · 一只巧克力味的小狼</div></div>
+        <span class="contact-go">›</span>
+      </a>
+      <a class="contact-item" href="https://m.bilibili.com/space/3493138087807409" target="_blank" rel="noopener">
+        <div class="contact-icon contact-icon--bili">📺</div>
+        <div class="contact-info"><div class="contact-name">B站 · 小夜</div><div class="contact-desc">UID 3493138087807409</div></div>
+        <span class="contact-go">›</span>
+      </a>
+      <a class="contact-item" href="https://fursuit.tv/@LTxiaoye" target="_blank" rel="noopener">
+        <div class="contact-icon contact-icon--fursuit">🐾</div>
+        <div class="contact-info"><div class="contact-name">兽频道 · @LTxiaoye</div><div class="contact-desc">fursuit.tv/@LTxiaoye</div></div>
+        <span class="contact-go">›</span>
+      </a>
+      <a class="contact-item" href="https://wpa.qq.com/msgrd?v=3&uin=3847279092&site=qq&menu=yes" target="_blank" rel="noopener">
+        <div class="contact-icon contact-icon--qq">💬</div>
+        <div class="contact-info"><div class="contact-name">QQ · 3847279092</div><div class="contact-desc">点击拉起 QQ 聊天 · 备注来意哦～</div></div>
+        <span class="contact-go">›</span>
+      </a>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="quote">「欢迎来找我玩，好感度从 0 开始慢慢攒～」—— 炭宝 🐾</div>
+  <div class="binary">01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100</div>
+  <div class="copy">© 2026 炭宝的小窝 · 扩列条 · Built with 💜</div>
+</footer>
+
+<!-- 留言板 -->
+<button class="fab" id="pawBtn">💬 留言板</button>
+<div class="sheet-overlay" id="chatOverlay">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="sheet-header">
+      <h2>小夜的留言板</h2>
+      <button class="sheet-close" id="chatClose">✕</button>
+    </div>
+    <div class="sheet-body" id="chatBody"></div>
+    <a class="btn-go-github" href="https://github.com/excuse-2580/-guestbook-/issues/2" target="_blank" rel="noopener">
+      点我去 GitHub 留言 ↗
+      <svg viewBox="0 0 24 24"><path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42L17.59 5H14V3zM5 5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7H5V5z"/></svg>
+    </a>
+    <div class="snackbar" id="firstHint" style="display:none">
+      💡 网页暂不支持直接留言，点下方按钮前往 GitHub 登录后即可防刷留言
+      <button class="snackbar__action" id="hintDismiss">知道了</button>
+    </div>
+    <div class="sheet-input">
+      <div class="text-field">
+        <input type="text" id="chatInput" placeholder="写好内容 → 复制 → 去 GitHub 粘贴" maxlength="500">
+      </div>
+      <button class="btn" id="chatSend">📋 复制并去粘贴</button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const GH = { 主人: "excuse-2580", 仓库: "-guestbook-", 留言帖编号: 2 };
+const API = `https://api.github.com/repos/${GH.主人}/${GH.仓库}/issues/${GH.留言帖编号}/comments`;
+
+const Store = {
+  get(k, f) { try { return JSON.parse(localStorage.getItem(k)) ?? f; } catch { return f; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } }
+};
+
+/* 导航高亮 */
+const navLinks = document.querySelectorAll('.nav a');
+const NAV_IDS = ['home', 'fursona', 'games', 'circles', 'avoid', 'contact'];
+const sections = NAV_IDS.map(id => $(id)).filter(Boolean);
+function onScroll() {
+  let cur = 'home';
+  sections.forEach(s => { if (s.getBoundingClientRect().top < 130) cur = s.id; });
+  navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+/* 游戏列表 */
+const VPN_URL = 'https://vpn.endyun.ltd/auth/login';
+const GAMES = [
+  { name:'崩坏：星穹铁道', url:'https://sr.mihoyo.com/', dot:'dot--sr', note:'小萌新' },
+  { name:'罗布乐思', url:'https://www.roblox.com/', dot:'dot--roblox', note:'挺好玩 · 需要 VPN', vpn:true },
+  { name:'三角洲行动', url:'https://df.qq.com/', dot:'dot--delta', note:'太好玩了（爆率未知）' },
+  { name:'使命召唤手游', url:'https://codm.qq.com/', dot:'dot--codm', note:'使命"新手"' },
+  { name:'迷你世界', url:'https://miniworld.cn/', dot:'dot--mini', note:'中立玩家 · 别引战哈' },
+  { name:'荒野乱斗', url:'https://bs.qq.com/', dot:'dot--bs', note:'挺好玩' },
+  { name:'皇室战争', url:'https://cr.qq.com/', dot:'dot--cr', note:'挺好玩' },
+  { name:'蛋仔派对', url:'https://egg.163.com/', dot:'dot--egg', note:'B站服「煤炭Owo」· 官服「黎夜furry」' },
+  { name:'Steam', url:'https://store.steampowered.com/', dot:'dot--steam', note:'手机云电脑在玩', vpn:true },
+  { name:'洛克王国：世界', url:'https://www.17roco.com/', dot:'dot--roco', note:'还行' },
+  { name:'火影忍者', url:'https://hyrz.qq.com/', dot:'dot--naruto', note:'最近没咋玩', status:'lite' },
+  { name:'穿越火线：枪战王者', url:'https://cfm.qq.com/', dot:'dot--cfm', note:'手感一般', status:'lite' },
+  { name:'极品飞车：集结', url:'https://nfs.qq.com/', dot:'dot--nfs', note:'微活', status:'lite' },
+  { name:'坦克世界闪击战', url:'https://wotb.163.com/', dot:'dot--wotb', note:'坦闪', status:'lite' },
+  { name:'光·遇', url:'https://sky.163.com/', dot:'dot--sky', note:'偶尔跑图', status:'lite' },
+  { name:'宝可梦大集结', url:'https://pokemon.qq.com/', dot:'dot--poke', note:'感觉一般', status:'lite' },
+  { name:'Phira', url:'https://phira.moe/', dot:'dot--phira', note:'音游 · 有点不好玩', status:'lite' },
+  { name:'Milthm', url:'https://milthm.xmoe.cc/', dot:'dot--milthm', note:'音游 · 有点不好玩', status:'lite' },
+  { name:'阴阳师', url:'https://yys.163.com/', dot:'dot--yys', note:'淡游，号已注销', status:'dead' },
+  { name:'巅峰极速', url:'https://speed.163.com/', dot:'dot--speed', note:'等网易把安装包内存降下来', status:'dead' },
+  { name:'我的世界', url:'https://www.minecraft.net/', dot:'dot--mc', note:'基岩 + 网易 · 爱加资源包 · 可纯生存', wrap:true }
+];
+const ESCAPE_RE = /[&<>"']/g;
+const ESCAPE_MAP = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' };
+const escapeHtml = s => String(s).replace(ESCAPE_RE, ch => ESCAPE_MAP[ch]);
+
+function renderGames() {
+  const list = $('gameList'); if (!list) return;
+  const arrow = '<span class="game-arrow">›</span>';
+  const frag = GAMES.map(g => {
+    const cls = g.status === 'dead' ? ' game--dead' : (g.status === 'lite' ? ' game--lite' : '');
+    const vpn = g.vpn ? '<span class="vpn-btn">VPN</span>' : '';
+    const inner = `<span class="game-dot ${g.dot}"></span><span class="game-name">${escapeHtml(g.name)}</span><span class="game-note">${escapeHtml(g.note || '')}</span>${vpn}`;
+    return `<a class="game${cls}" href="${g.url}" target="_blank" rel="noopener">${inner}${arrow}</a>`;
+  }).join('');
+  list.innerHTML = frag + `
+    <a class="btn-go-github" href="${VPN_URL}" target="_blank" rel="noopener" style="margin:16px 0 0">🔒 下载 VPN（罗布乐思 / Steam 要用）</a>
+    <div class="mc-download">
+      <a class="btn btn--primary" href="https://mc.163.com/" target="_blank" rel="noopener">网易版下载</a>
+      <a class="btn btn--primary" href="https://bbk.endyun.ltd/main" target="_blank" rel="noopener">国际基岩版</a>
+    </div>
+    <div class="games-hint">● 常玩　● 偶尔 / 微活　● 淡游 · 弃坑　·　点游戏名跳转官网，部分需 VPN</div>`;
+}
+renderGames();
+
+/* 留言板 */
+const chatOverlay = $('chatOverlay'), chatBody = $('chatBody'), chatInput = $('chatInput'), chatSend = $('chatSend');
+
+function openChat() {
+  chatOverlay.classList.add('open'); loadRemoteMessages(); setTimeout(() => chatInput.focus(), 80);
+  const hint = $('firstHint'), dismissed = Store.get('chatHintShown', 0);
+  if (Date.now() - dismissed > 86400000) hint.style.display = 'flex'; else hint.style.display = 'none';
+  $('hintDismiss').onclick = () => { hint.style.display = 'none'; Store.set('chatHintShown', Date.now()); };
+}
+function closeChat() { chatOverlay.classList.remove('open'); }
+$('pawBtn').addEventListener('click', openChat);
+$('chatClose').addEventListener('click', closeChat);
+chatOverlay.addEventListener('click', e => { if (e.target === chatOverlay) closeChat(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && chatOverlay.classList.contains('open')) closeChat(); });
+
+function 相对时间(d) {
+  const diff = Math.floor((new Date() - new Date(d)) / 1000);
+  const rtf = new Intl.RelativeTimeFormat('zh', { numeric: 'auto' });
+  if (diff < 60) return rtf.format(-diff, 'second');
+  if (diff < 3600) return rtf.format(-Math.floor(diff / 60), 'minute');
+  if (diff < 86400) return rtf.format(-Math.floor(diff / 3600), 'hour');
+  if (diff < 2592000) return rtf.format(-Math.floor(diff / 86400), 'day');
+  return new Date(d).toLocaleDateString('zh-CN');
+}
+
+async function loadRemoteMessages() {
+  chatBody.innerHTML = '<div class="msg msg--remote">加载中…</div>';
+  try {
+    const res = await fetch(API, { headers: { Accept: "application/vnd.github+json" } });
+    if (!res.ok) throw new Error(res.status);
+    const list = await res.json(); list.reverse();
+    chatBody.innerHTML = '';
+    list.forEach(c => {
+      const div = document.createElement('div'); div.className = 'msg msg--remote';
+      const isAuthor = c.user.login.toLowerCase() === GH.主人.toLowerCase();
+      div.innerHTML = `<div class="author ${isAuthor ? 'author--self' : 'author--other'}">${escapeHtml(c.user.login)}${isAuthor ? '<span class="badge">🐾 炭宝</span>' : ''}</div><div>${escapeHtml(c.body)}</div><div class="time">${相对时间(c.created_at)}</div>`;
+      chatBody.appendChild(div);
+    });
+  } catch {
+    chatBody.innerHTML = '<div class="msg msg--remote">加载失败，请检查网络</div><button class="btn-retry" onclick="loadRemoteMessages()">🔄 重试</button>';
+  }
+}
+
+function showToast(msg) {
+  const t = $('toast'); t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._timer); t._timer = setTimeout(() => t.style.display = 'none', 2000);
+}
+
+async function send() {
+  const text = chatInput.value.trim(); if (!text) return;
+  const GITHUB_URL = 'https://github.com/excuse-2580/-guestbook-/issues/2';
+  const formatted = `**访客留言**\n\n${text}`;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(formatted);
+    else { const ta = document.createElement('textarea'); ta.value = formatted; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }
+    showToast('✅ 已复制！正在跳转 GitHub…'); chatInput.value = '';
+    setTimeout(() => window.open(GITHUB_URL, '_blank', 'noopener'), 800);
+  } catch { showToast('❌ 复制失败，请手动复制'); }
+}
+chatSend.addEventListener('click', send);
+chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+</script>
+</body>
+</html>
